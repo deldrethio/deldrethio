@@ -1,32 +1,20 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<section id="wrapper">
-	<header id="header">
-		<a id="title" class="index">Blog</a>
-        <a id="title" class="about">About</a>
-	</header>
+<section id='wrapper'>
 
-	<ul id="post-list">
+	<ul id='post-list'>
 		{% for post in posts %}
 			<li>
-				<a href='/{{ post.path }}'><aside class="dates">{{ post.date|date:"F j Y" }}</aside></a>
-				<a href='/{{ post.path }}'>{{ post.title }}<h2>{{ post.headline }}</h2></a>
+				<a href='/{{ post.path }}'><aside class='dates'>{{ post.date|date:'F j Y' }}</aside></a>
+				<a href='/{{ post.path }}' class='title'>{{ post.title }}<h2>{{ post.headline }}</h2></a>
 			</li>
 		{% endfor %}
 	</ul>
 
-	<!-- Uncomment for link to archive.
-	{% if posts|length >= 4 %}
-		<footer id="post-list-footer">
-			<a id="archive-link" href="archive.html"> <span class="arrow">&larr;</span> Archive</a>
-		</footer>
-	{% endif %}
-	-->
-
 	{% block footer %}
-		<footer id="footer">
-			<p class="small">deldreth.io</p>
+		<footer id='footer'>
+			<p class='small'>deldreth.io</p>
 		</footer>
 	{% endblock footer %}
 </section>

@@ -3,10 +3,6 @@
 {% block content %}
 
 <section id="wrapper" class="group">
-	<header id="header">
-		<a id="title" href="/">Blog</a>
-	</header>
-
 	<article class="post">
 		<header>
 			<h1>{{ title }}</h1>
@@ -43,7 +39,7 @@
 		<span class="prev">
 			{% if prevPost %}
 				<a href='/{{ prevPost.path }}'>
-					<span class="arrow">&larr;</span> {{ prevPost.title }}
+					<span class="arrow"><span class="glyphicon glyphicon-chevron-left"></span></span> {{ prevPost.title }}
 				</a>
 			{% endif %}
 		</span>
@@ -52,7 +48,7 @@
 		<span class="next">
 			{% if nextPost %}
 				<a href='/{{ nextPost.path }}'>
-					{{ nextPost.title }} <span class="arrow">&rarr;</span>
+					{{ nextPost.title }} <span class="arrow"><span class="glyphicon glyphicon-chevron-right"></span></span>
 				</a>
 			{% endif %}
 		</span>

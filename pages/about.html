@@ -1,10 +1,32 @@
 {% extends "base.html" %}
 
-{% block body %}
-<div class="jumbotron">
-  <div class="container">
-    <h1>Make this your about page!</h1>
-    <p>Use this page to tell your visitors about you. Or scrape it, and make a new one!</p>
-  </div>
-</div>
+{% block content %}
+<section id="wrapper">
+
+    <p>
+        <blockquote style='margin-top: 100px'>
+            I'm a full stack web developer, father, and tinkerer of many shiny things. I have a passion for data visualization. Since 2004 I've been developing with php, but recently I've shifted my focus to python, javascript (specifically react), and creating apis.
+        </blockquote>
+    </p>
+
+    <br>
+
+    <p>
+        <h1>Links</h1>
+    <p>
+
+    <p>
+        <a href='http://github.com/deldreth'>Github</a>
+    </p>
+
+    <p>
+        <a href='https://www.linkedin.com/in/devin-eldreth-31163513'>LinkedIn</a>
+    </p>
+
+	{% block footer %}
+		<footer id="footer">
+			<p class="small">deldreth.io</p>
+		</footer>
+	{% endblock footer %}
+</section>
 {% endblock %}
