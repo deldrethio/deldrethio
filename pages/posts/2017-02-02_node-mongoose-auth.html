@@ -1,0 +1,39 @@
+title: Node, Mongoose User Authentication
+headline: Code snippets for user authentication with mongoose schemas.
+author: Devin Eldreth
+date: 02-02-2017
+
+{% extends "post.html" %}
+{% block body %}
+
+{% filter markdown:"fenced-code-blocks" %}
+{% verbatim %}
+
+The following code snippets represent a straight forward approach to baking salted password authentication into your node service with Mongoose.
+
+User Model Schema
+
+```javascript
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
+const crypto = require('crypto');
+
+const UserSchema = new Schema( {
+  email: {
+    type: String,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  salt: {
+    type: String,
+    required: true
+  }
+} );
+```
+
+{% endverbatim %}
+{% endfilter %}
+{% endblock body %}
