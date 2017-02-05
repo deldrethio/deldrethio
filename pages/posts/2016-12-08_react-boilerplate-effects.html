@@ -1,7 +1,7 @@
 title: Managing Redux Side Effects with Async Await
 headline: Sagas are great. However, they come with an extensive and somewhat complicated api and they require functional knowledge of generators. Here I revist my react-boilerplate repo refactored with async/await side effect management.
 author: Devin Eldreth
-date: 30-11-2016
+date: 08-12-2016
 
 {% extends "post.html" %}
 {% block body %}
@@ -18,7 +18,7 @@ middleware the expectation of the yields.
 
 With the async/await approach we avoid the complications of using generators
 and rely soley on ES2017 async modifiers. The project now has a dependency
-of [redux-effex]() which provides some utilities for setting up the async
+of [redux-effex](https://github.com/exponent/redux-effex) which provides some utilities for setting up the async
 functions (nothing quite as complicated as sagas).
 
 
@@ -96,7 +96,7 @@ export default [
 
 We don't have to enforce our intimate knowledge of generators in situations
 where we want to manage redux side effects. Relying on ES2017 async/await is
-a simple enough alternative. 
+a simple enough alternative.
 
 {% endverbatim %}
 {% endfilter %}
