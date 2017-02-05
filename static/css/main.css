@@ -287,9 +287,16 @@ thead th,th {
 }
 
 img {
-	width: 100%;
+	width: 50%;
 	max-width: 100%;
 	border-radius: 3px;
+    display: block;
+    margin: 20px auto;
+    background-color: #FFFFFF;
+    padding: 4px;
+    -webkit-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.75);
 }
 
 /* Made with Cactus Badge */
