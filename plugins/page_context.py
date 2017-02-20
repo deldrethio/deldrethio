@@ -20,7 +20,8 @@ def preBuildPage(page, context, data):
 
 
 def read_time(data):
-    stripped_data = re.sub('<[^<]+?>', '', data)
+    stripped_data = re.sub('<[^<]+?>', '', data)  # markup
+    stripped_data = re.sub('{%.*%}', '', stripped_data)  # django tags
     time = len(re.findall("(\S+)", stripped_data)) / 275.0
 
     time += len(re.findall('(<img)', data)) * 0.2
