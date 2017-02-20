@@ -5,26 +5,22 @@ date: 19-02-2017
 
 {% extends "post.html" %}
 {% block body %}
+{{ READ_TIME }}
 
 {% filter markdown:"fenced-code-blocks" %}
 {% verbatim %}
 <a name='toc'></a>
 # Table of Contents
-[History: Flux to Redux](#history)
-
-[Data Flow](#data-flow)
-
-[Action Types and their Creators](#actions)
-
-[The Store](#store)
-
-[Middleware](#middleware)
-
-[Immutability](#immutability)
-
-[Reducers](#reducers)
-
-[Side Effects](#side-effects)
+1. [History: Flux and Redux](#history)
+2. [Terms](#terms)
+2. [The Three Principles](#three)
+3. [Data Flow](#data-flow)
+4. [Action Types and their Creators](#actions)
+5. [The Store](#store)
+6. [Middleware](#middleware)
+7. [Immutability](#immutability)
+8. [Reducers](#reducers)
+9. [Side Effects](#side-effects)
 
 ---
 
@@ -36,7 +32,7 @@ and examples that can be worked on independently.
 
 Redux isn't out to get you. Sit back. Deep breath. Here we go.
 
-# History: Flux to Redux <a name="history"></a>
+# History: Flux and Redux <a name="history"></a>
 To get where you're going it's important to know where you've been. Enter
 Flux. React at a very high level has always been a library for writing user
 interfaces. It never provided any strong data separation. Each component had
@@ -54,6 +50,10 @@ Redux took the ideas behind Flux and wrapped them up in a more consumable way.
 It removed the need to architect a system of a concept specific to React and
 allowed developers to focus on maintaining state.
 
+If you want to know more about the history and motivation behind redux then I
+suggest checking out the [Prior Art](http://redux.js.org/docs/introduction/PriorArt.html)
+of the Redux docs.
+
 <!-- ### The Confusion of Flux
 So often we find ourselves simply installing a new package to gain a new
 piece of functionality that solves a problem. Flux wasn't something we could
@@ -64,12 +64,103 @@ initial confusion surrounding flux.  -->
 [top](#toc)
 
 ---
+<a name="terms"></a>
+# Terms
+
+**Action**: Strings that represent the name of an action. Usually defined as a
+constant. I refer to these as types.
+```javascript
+const HAS_APPLES = 'HAS_APPLES';
+```
+
+**Action Creator**: Functions that return an object that describes an action.
+I often refer to these as actions. Think of them as giving context to an
+action that by itself has little meaning.
+```javascript
+const hasApples = ( number_of_apples ) => {
+  return {
+    type: HAS_APPLES,
+    number_of_apples
+  };
+};
+```
+
+**Reducer**: Pure functions that accept two arugments: the previous state and
+the return of an action creator (I will usually just refer to this as the
+action). Reducers return the next or new state. They **DO NOT** modify the
+state that they were given.
+```javascript
+const hasApplesReducer = ( state = PREVIOUS_STATE, action ) => {
+  return {
+    ...state,
+    apples: action.number_of_apples
+  };
+};
+```
+
+**Store**: All things Redux pass through the store. It is an object that
+provides the following:
+
+1. Stores application state.
+2. Allows access to state through `getState()`.
+3. Allows state to be updated with `dispatch(action)`.
+4. Registers listeners via `subscribe(listener)`.
+6. Handles unregistering of listeners via the function returned by
+   `subscribe(listener)`.
+
+[top](#toc)
+
+---
+<a name="three"></a>
+# The Three Principles
+
+### 1. Single Source of Truth
+This principle is actually quite simple: The entire state of your application
+should be represented as a single object within a single store.
+
+### 2. State is Immutable
+Also conceptually straight forward. **State cannot be modified directly.**
+The only way to modify state is by dispatching actions that describe the
+changes that should happen to state.
+
+### 3. State Updates are Made with Pure Functions
+Pure functions. For a function to be pure the following statements must hold:
+
+1. The function always evaluates the same result given the same arguments. The
+  result cannot depend on any hidden information that could change during
+  execution.
+2. Evaluation of the result does not cause any side effects.
+
+This means that our **reducers** will always be pure functions. They take
+a previous state and an action and return the next or new state.
+
+[top](#toc)
+
+---
 <a name="data-flow"></a>
 # Data Flow
 
-Just like I mentioned earlier. Data flow in Redux is unidirectional. The
-attached diagram shows the flow of data relative to a 'View' or some 'Side
-Effect'.
+Data flow in Redux is unidirectional. The attached diagram shows the flow of
+data relative to a 'View' or some 'Side Effect'. All actions pass through the
+store and the store provides state. Take
+note that unlike Flux redux does not use the concept of a Dispatcher, but the
+store does provide a dispatch function. This diagram abstracts this out as the
+entry point of the store.
+
+Redux allows for functions to be executed as middleware to extend the
+functionality of the store. Remember principle 3: **state updates are made
+with pure functions**. Middlwares give added functionality to actions moving
+through the store. Middlewares also commonly create **side effects** named
+because they are a side effect of the action that was dispatched. A middleware
+could also just be a call to `console.log` to allow us inspection of the
+action.
+
+The **View** in this diagram is an abstract concept of the view layer. Since
+we will be talking about Redux and its relationship to React the **View**
+could be a `connect()` wrapped component and includes the expectation that
+the **View** will be rendering and potentially dispatching its own actions.
+
+_The same abstraction applies to **Side Effects**._
 
 <a
     target='_blank'
