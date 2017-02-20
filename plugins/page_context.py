@@ -1,17 +1,38 @@
 #coding:utf-8
 
+import re
+from math import floor
+
+
 def preBuildPage(page, context, data):
     """
-    Updates the context of the page to include: the page itself as {{ CURRENT_PAGE }}
+    Updates the context of the page to include: the page itself
+    as {{ CURRENT_PAGE }}
     """
 
-    # This will run for each page that Cactus renders.
-    # Any changes you make to context will be passed to the template renderer for this page.
-
     extra = {
-        "CURRENT_PAGE": page
-        # Add your own dynamic context elements here!
+        "CURRENT_PAGE": page,
+        "READ_TIME": read_time(data)
     }
 
     context.update(extra)
     return context, data
+
+
+def read_time(data):
+    stripped_data = re.sub('<[^<]+?>', '', data)
+    time = len(re.findall("(\S+)", stripped_data)) / 275.0
+
+    time += len(re.findall('(<img)', data)) * 0.2
+
+    hours_part = int(floor(time / 60))
+    minutes_part = int(floor(time % 60))
+    seconds_part = int(floor(time * 60 % 60))
+
+    read_str = 'Read time: {m} minutes {s} seconds'
+
+    if hours_part is not 0:
+        read_str = 'Read time: {h} hours {m} minutes {s} seconds'
+        return read_str.format(h=hours_part, m=minutes_part, s=seconds_part)
+
+    return read_str.format(m=minutes_part, s=seconds_part)
