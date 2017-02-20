@@ -1,0 +1,126 @@
+title: Redux Primer
+headline: A basic, barebones tutorial for Redux
+author: Devin Eldreth
+date: 19-02-2017
+
+{% extends "post.html" %}
+{% block body %}
+
+{% filter markdown:"fenced-code-blocks" %}
+{% verbatim %}
+<a name='toc'></a>
+# Table of Contents
+[History: Flux to Redux](#history)
+
+[Data Flow](#data-flow)
+
+[Action Types and their Creators](#actions)
+
+[The Store](#store)
+
+[Middleware](#middleware)
+
+[Immutability](#immutability)
+
+[Reducers](#reducers)
+
+[Side Effects](#side-effects)
+
+---
+
+I've been working with React and subsequently Redux for nearly two years. On
+occassion I still hear people expressing confusion over Redux. The goal of
+this tutorial is to provide a basic but comprehensive series of explainations
+for all things Redux. Several of the sections will also provide coding tasks
+and examples that can be worked on independently.
+
+Redux isn't out to get you. Sit back. Deep breath. Here we go.
+
+# History: Flux to Redux <a name="history"></a>
+To get where you're going it's important to know where you've been. Enter
+Flux. React at a very high level has always been a library for writing user
+interfaces. It never provided any strong data separation. Each component had
+state and various things modified that state. Communication between components
+largely boiled down to passing props down to children. Flux provides a
+unidirectional data flow: actions sent through a dispatcher which routed to
+a store and a change event would eventually be fired so components could
+rerender. Flux showed that React applications could have a separation of
+concerns. The store could reduce state and the view layer needed only rerender
+from the current state.
+
+**The basis of this data flow remain in Redux.**
+
+Redux took the ideas behind Flux and wrapped them up in a more consumable way.
+It removed the need to architect a system of a concept specific to React and
+allowed developers to focus on maintaining state.
+
+<!-- ### The Confusion of Flux
+So often we find ourselves simply installing a new package to gain a new
+piece of functionality that solves a problem. Flux wasn't something we could
+just plug into an already running application. Using it required that the
+application be architected around its concepts. I think this created a lot of
+initial confusion surrounding flux.  -->
+
+[top](#toc)
+
+---
+<a name="data-flow"></a>
+# Data Flow
+
+Just like I mentioned earlier. Data flow in Redux is unidirectional. The
+attached diagram shows the flow of data relative to a 'View' or some 'Side
+Effect'.
+
+<a
+    target='_blank'
+    href='http://i.imgur.com/5miA6AT.png'>
+    <img src='http://i.imgur.com/5miA6AT.png' style='width:100%;'>
+</a>
+
+[top](#toc)
+
+---
+<a name="actions"></a>
+# Action Types and their Creators
+
+
+[top](#toc)
+
+---
+<a name="store"></a>
+# The Store
+
+
+[top](#toc)
+
+---
+<a name="middleware"></a>
+# Middleware
+
+
+[top](#toc)
+
+---
+<a name="immutability"></a>
+# Immutability
+
+
+[top](#toc)
+
+---
+<a name="reducers"></a>
+# Reducers
+
+
+[top](#toc)
+
+---
+<a name="side-effects"></a>
+# Side Effects
+
+
+[top](#toc)
+
+{% endverbatim %}
+{% endfilter %}
+{% endblock body %}
