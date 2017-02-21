@@ -15,12 +15,15 @@ date: 19-02-2017
 2. [Terms](#terms)
 2. [The Three Principles](#three)
 3. [Data Flow](#data-flow)
-4. [Action Types and their Creators](#actions)
+4. [Action Types and Creators](#actions)
 5. [The Store](#store)
 6. [Middleware](#middleware)
 7. [Immutability](#immutability)
 8. [Reducers](#reducers)
 9. [Side Effects](#side-effects)
+10. [Application Structure](#structure)
+
+_Some examples in this article use Flow typing._
 
 ---
 
@@ -172,7 +175,52 @@ _The same abstraction applies to **Side Effects**._
 
 ---
 <a name="actions"></a>
-# Action Types and their Creators
+# Action Types and Creators
+I mentioned before that I prefer to refer to actions as types and action
+creators simply as creators. This helps avoid some confusion over the
+expectations of an action and an action creator.
+
+### Types
+Types are very straight forward. They're a value, usually a string, defined as
+a constant. They're analogous to a event name. In organizing my react redux
+applications I tend to prefer prefixing types with some label that indicates
+their relationship with the rest of redux: `APP_`, `TRACK_`, etc.
+
+These are valid types:
+```javascript
+const APP_START = 'APP_START';
+const AUTH_SUCCESS = 'AUTH_SUCCESS';
+```
+
+### Creators
+Action creators are functions that return an object that describes an action
+type. By themselves types are not very discriptive and in order to use them
+with Redux's dispatch they need to be part of an object. Creators let us
+handle that expectation.
+
+types.js
+```javascript
+export const AUTH_SUCCESS = 'AUTH_SUCCESS';
+```
+
+We now have a type called `AUTH_SUCCESS` but we don't know what it actually does.
+
+creators.js
+```javascript
+import { AUTH_SUCCESS } from './types';
+
+export const authSuccess = ( user: Object ) => ({
+  type: AUTH_SUCCESS,
+  user
+});
+```
+
+From the `authSuccess( user )` creator we can tell that dispatches of action
+`AUTH_SUCCESS` will expect a user object.
+
+Action creators need not be any more complicated than this. They're simply
+functions that describe the types they use. They only need to return an object
+that has a **type** property.
 
 
 [top](#toc)
@@ -180,6 +228,50 @@ _The same abstraction applies to **Side Effects**._
 ---
 <a name="store"></a>
 # The Store
+The Redux Store is the workhorse of redux. Everything that is Redux passes
+through the store. In turn the store exposes the state and dispatch of Redux.
+Stores can get pretty complicated as they're extended through middleware.
+Often store creation is wrapped within a function. I will show both examples
+
+This is the most basic of stores:
+```javascript
+import { createStore } from 'redux';
+import reducer from '../reducers/';
+
+export default createStore( reducer );
+```
+
+Here we've done nothing really exciting with our store. We provided redux's
+`createStore()` with our reducer and exported the resulting store. Stores
+don't need to by any more complicated than this. However, in setup for the
+next section I'll show what a more robust store might look like.
+
+```javascript
+import { createStore, applyMiddleware, compose } from 'redux';
+import reducer from '../reducers/';
+
+export default (): Object => {
+  const middleware = [];
+
+  const enhancers = compose(
+    applyMiddleware( ...middleware )
+  );
+
+  return createStore(
+    reducer,
+    enhancers
+  );
+};
+```
+We've now created a store with the expectation that it will have middleware
+that **enhance** its functionality through compose. Compose is a useful
+functional utility that takes a variable number of arguments that are
+functions and like the [docs](http://redux.js.org/docs/api/compose.html)
+say: **don't overthink it**.
+
+Also, I prefer returning my store as a function. This isn't a requirement. You
+also export an [IIFE](https://en.wikipedia.org/wiki/Immediately-invoked_function_expression)
+or the created object itself.
 
 
 [top](#toc)
@@ -187,7 +279,19 @@ _The same abstraction applies to **Side Effects**._
 ---
 <a name="middleware"></a>
 # Middleware
+Our store is ready to party. Though, say we want to log actions as they move
+through the store. The best way to do this is through the store's middleware.
+Remember that state is immutable. Middleware must respect this princple.
+However, they can expose all sorts of functionality to the store. Logging
+is fairly straight forward and if you've got any experience with Express'
+middleware api then this should sit well with you.
 
+The basic structure of a middleware:
+```javascript
+const middleware = store => next => action => {
+  return next( action );
+};
+```
 
 [top](#toc)
 
