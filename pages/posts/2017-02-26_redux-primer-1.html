@@ -1,7 +1,8 @@
 title: Redux Primer
 headline: A basic, barebones tutorial for Redux
 author: Devin Eldreth
-date: 19-02-2017
+date: 26-02-2017
+published: False
 
 {% extends "post.html" %}
 {% block body %}
@@ -20,8 +21,8 @@ date: 19-02-2017
 6. [Middleware](#middleware)
 7. [Immutability](#immutability)
 8. [Reducers](#reducers)
+9. [Selectors](#selectors)
 9. [Side Effects](#side-effects)
-10. [Application Structure](#structure)
 
 _Some examples in this article use Flow typing._
 
@@ -57,16 +58,14 @@ If you want to know more about the history and motivation behind redux then I
 suggest checking out the [Prior Art](http://redux.js.org/docs/introduction/PriorArt.html)
 of the Redux docs.
 
-<!-- ### The Confusion of Flux
-So often we find ourselves simply installing a new package to gain a new
-piece of functionality that solves a problem. Flux wasn't something we could
-just plug into an already running application. Using it required that the
-application be architected around its concepts. I think this created a lot of
-initial confusion surrounding flux.  -->
 
 [top](#toc)
 
 ---
+
+
+
+
 <a name="terms"></a>
 # Terms
 
@@ -89,9 +88,8 @@ const hasApples = ( number_of_apples ) => {
 ```
 
 **Reducer**: Pure functions that accept two arugments: the previous state and
-the return of an action creator (I will usually just refer to this as the
-action). Reducers return the next or new state. They **DO NOT** modify the
-state that they were given.
+the return of an action creator. Reducers return the next or new state.
+They **DO NOT** modify the state that they were given.
 ```javascript
 const hasApplesReducer = ( state = PREVIOUS_STATE, action ) => {
   return {
@@ -111,9 +109,14 @@ provides the following:
 6. Handles unregistering of listeners via the function returned by
    `subscribe(listener)`.
 
+
 [top](#toc)
 
 ---
+
+
+
+
 <a name="three"></a>
 # The Three Principles
 
@@ -137,16 +140,21 @@ Pure functions. For a function to be pure the following statements must hold:
 This means that our **reducers** will always be pure functions. They take
 a previous state and an action and return the next or new state.
 
+
 [top](#toc)
 
 ---
+
+
+
+
 <a name="data-flow"></a>
 # Data Flow
 
 Data flow in Redux is unidirectional. The attached diagram shows the flow of
 data relative to a 'View' or some 'Side Effect'. All actions pass through the
 store and the store provides state. Take
-note that unlike Flux redux does not use the concept of a Dispatcher, but the
+note that unlike Flux Redux does not use the concept of a Dispatcher, but the
 store does provide a dispatch function. This diagram abstracts this out as the
 entry point of the store.
 
@@ -171,13 +179,18 @@ _The same abstraction applies to **Side Effects**._
     <img src='http://i.imgur.com/5miA6AT.png' style='width:100%;'>
 </a>
 
+
 [top](#toc)
 
 ---
+
+
+
+
 <a name="actions"></a>
 # Action Types and Creators
 I mentioned before that I prefer to refer to actions as types and action
-creators simply as creators. This helps avoid some confusion over the
+creators simply as actions. This helps avoid some confusion over the
 expectations of an action and an action creator.
 
 ### Types
@@ -226,6 +239,10 @@ that has a **type** property.
 [top](#toc)
 
 ---
+
+
+
+
 <a name="store"></a>
 # The Store
 The Redux Store is the workhorse of redux. Everything that is Redux passes
@@ -277,14 +294,18 @@ or the created object itself.
 [top](#toc)
 
 ---
+
+
+
+
 <a name="middleware"></a>
 # Middleware
 Our store is ready to party. Though, say we want to log actions as they move
 through the store. The best way to do this is through the store's middleware.
 Remember that state is immutable. Middleware must respect this princple.
 However, they can expose all sorts of functionality to the store. Logging
-is fairly straight forward and if you've got any experience with Express'
-middleware api then this should sit well with you.
+is simple enough to outline the basis and if you've got any experience with
+Express' middleware api then this should sit well with you.
 
 The basic structure of a middleware:
 ```javascript
@@ -293,28 +314,254 @@ const middleware = store => next => action => {
 };
 ```
 
+You can evaluate the store before and after calling next. Next applies the
+action to the store but it does not modify the state.
+
+```javascript
+const middleware = store => next => action => {
+  console.log( 'Previous State', store.getState() );
+  let result = next( action );
+  console.log( 'Next State', store.getState());
+
+  return result.
+};
+```
+
 [top](#toc)
 
 ---
+
+
+
+
 <a name="immutability"></a>
 # Immutability
 
+I don't intend to go too deep into immutability since other parts of this
+primer really attempt to enforce the idea that the state of Redux cannot be
+changed except through reducers returning new state. I do, however, want to
+provide a brief list of really useful immutability helpers.
+
+Obviously [Object.assign()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
+can be used in situations where you don't want to use extra packages. Keep in
+mind that not all browsers support Object.assign. If you're using lodash then
+the [_.assign()](https://lodash.com/docs/4.17.4#assign) can be used as a
+replacement.
+
+Facebook documentation suggests using [immutability-helper](https://github.com/kolodny/immutability-helper)
+instead of the now deprecated react addons. I have actually been using this
+helper in my production apps. Though I have very little use case for its other
+functions outside of `$merge`.
+
+I've also used [seamless-immutable](https://github.com/rtfeldman/seamless-immutable)
+in some React Native applications.
+
 
 [top](#toc)
 
 ---
+
+
+
+
 <a name="reducers"></a>
 # Reducers
 
+Principle 3 requires that pure functions be used to modify state. As discussed
+above we avoid side effects by ensuring that our reducers are pure.
+If reducers were impure it could become difficult to rely on the state tree
+for consistency. Much like the difficulty of determing application behavior
+in languages that use **globals**. Maintaining pure functions for reducers
+does not mean that they must be simple functions.
+
+A common pattern in creating reducers is to define the initial state of a
+group of reducers.
+
+```javascript
+const INITIAL_STATE = {
+  user: null
+};
+```
+
+A reducer could easily look like the following. I've used `Object.assign` here
+to maintain simplicity and avoid relying on any immutability helpers.
+
+```javascript
+const receiveUser = ( state = INITIAL_STATE, action ) => {
+  return Object.assign( {}, state, {
+    user: action.user
+  } );
+};
+```
+
+We could map this reducer to an `AUTH_SUCCESS` action that contains a user
+object.
+
+```javascript
+export default rootReducer = ( state = INITIAL_STATE, action ) => {
+  switch( action.type ) {
+      case AUTH_SUCCESS:
+        return receiveUser( state, action );
+      case default:
+        return state;
+  }
+};
+```
+
+I've shown here how a reducer could be crafted to update an object with
+the intended return of an action. However, what if we had an `UPDATE_FIRSTNAME`
+action that only updated the user object's first name? Assuming that the
+state's user property is no longer null we can clevery craft reducers with the
+es6 object spread operator.
+
+```javascript
+const updateUsername = ( state = INITIAL_STATE, action ) => {
+  return Object.assign( {}, state, {
+    user: {
+      ...state.user,
+      first_name: action.first_name
+    }
+  } );
+};
+```
+
+We also might need to mutate some API response that's given on an action to
+better suit our application's expectations.
+
+```javascript
+const mapResponse = ( state = INITIAL_STATE, action ) => {
+  return Object.assign( {}, state, {
+    user: {
+      fields: action.user.data.map( data => ( {
+        name: data.name.replace(/\_/g, ' ').replace(/\w\S*/g, text =>
+          text.charAt( 0 ).toUpperCase() + text.subStr( 1 ).toLowerCase() )
+        } )
+      } )
+    }
+  } );
+};
+```
+
+Here we're kind of assuming that the names of fields could be human readable
+and come in the form of `some_field_name`. Our user object will actually have
+fields that are formatted like `name: 'Some Field Name'`.
+
+Reducers can get fairly complicated. It's important to keep in mind that they
+must not modify the state parameter they receive or cause side effects.
 
 [top](#toc)
 
 ---
+
+
+
+
+<a name="selectors"></a>
+# Selectors
+
+Another useful thing to do with Redux is to create functions that are referred
+to as selectors. They allow us to **compute derived state** which is a complex
+way to say that they allow us to make logic based off the entire state of the
+app. Selectors are commonly used in the `mapStateToProps()` function, but they
+are defined often defined alongside reducers.
+
+Say that our user data contains an array of objects that contain meta data.
+Some fields we want to display in the UI and others we don't. Their visibility
+is returned as part of the field itself. We can create a reusable selector to
+allow us to quickly pull out the visible fields.
+
+Our state has been updated post auth such that the user property resembles
+the following:
+```javascript
+const INITIAL_STATE = {
+  user: {
+    fields: [
+        {
+          name: 'Nickname',
+          visible: true
+        },
+        {
+          name: 'Signup Date',
+          visible: false
+        }
+    ]
+  }
+};
+```
+
+Within our reducer file we export a named function to select only the visible
+fields. Note that the state param will actually be the entire state of all
+reducers so we must address the state accordingly. I've also added some
+validation (this could also be done in the View layer).
+
+```javascript
+export const select_visibleUserData = ( state ) => {
+  if ( !state.auth.user.fields ) {
+    return [];
+  }
+
+  return state.auth.user.fields.filter( field =>
+    field.visible === true
+  );
+};
+```
+
+This selector will always return an array relative to the auth user state.
+Within a Redux connected React component we would use this selector in the
+mapStateToProps function.
+
+```javascript
+import { select_visibleUserData } from '../reducers/authReducer';
+
+const mapStateToProps = ( state ) => {
+  fields: select_visibleUserData( state );
+};
+```
+
+In this situation the fields prop will be an array that contains a single
+object that contains the name _Nickname_. Selectors can be incredibly useful
+and they help to maintain separation of concerns. Leaving the View layer
+to worry about rendering the data instead of whether something should be
+rendered.
+
+[top](#toc)
+
+---
+
+
+
+
 <a name="side-effects"></a>
 # Side Effects
 
+When we dispatch actions we have the expectation that something immediate will
+happen. The state will be updated in some way and the View layer will re-render
+the changes. Nothing is always that simple. Sometimes our actions might cause
+other things to happen within the application. These could be making requests
+to an API or sequencing a series of dispatched actions. Whatever these might
+be we refer to them as **side effects**, and they happen asynchronous through
+middleware.
+
+I won't go into any code examples for side effect management, and instead will
+provide links to several useful libraries that can assist greatly with side
+effects. All of these operate as middleware and require an understanding of
+their API. Some are more complex than others.
+
+[Redux Thunk](https://github.com/gaearon/redux-thunk) is arguably the most
+popular of these libraries. It allows for the creation of [thunks](https://en.wikipedia.org/wiki/Thunk)
+relative to dispatched actions.
+
+[Redux Saga](https://github.com/redux-saga/redux-saga) is probably my personal
+favorite, but I hold a soft spot in my heart for generators. The API for sagas
+can get complicated quick but it allows you to write complex synchronous
+handlers for dispatched actions.
+
+[Redux Effex](https://github.com/exponent/redux-effex) allows you to easily
+use async/await functions so the API is expected standard javascript.
 
 [top](#toc)
+
+---
 
 {% endverbatim %}
 {% endfilter %}
