@@ -2,6 +2,7 @@ title:
 headline:
 author:
 date:
+published: False
 
 {% extends "post.html" %}
 {% block body %}
