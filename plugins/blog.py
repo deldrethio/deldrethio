@@ -36,14 +36,17 @@ def preBuild(site):
             # Check if we have the required keys
             for field in ["title", "headline", "date", "author", "published"]:
 
-                if not context.has_key(field):
-                    logging.warning("Page %s is missing field: %s" % (page.path, field))
+                if field not in context:
+                    logging.warning("Page %s is missing field: %s" % (
+                        page.path, field
+                    ))
                 else:
                     if field == "published" and context[field] == 'False':
                         return
 
                     if field == "date":
-                        context_post[field] = _convertDate(context[field], page.path)
+                        context_post[field] = _convertDate(context[field],
+                                                           page.path)
                     else:
                         context_post[field] = context[field]
 
@@ -66,8 +69,11 @@ def preBuild(site):
     indexes = xrange(0, len(Global["posts"]))
 
     for i in indexes:
-        if i+1 in indexes: Global["posts"][i]['prevPost'] = Global["posts"][i+1]
-        if i-1 in indexes: Global["posts"][i]['nextPost'] = Global["posts"][i-1]
+        if i+1 in indexes:
+            Global["posts"][i]['prevPost'] = Global["posts"][i+1]
+
+        if i-1 in indexes:
+            Global["posts"][i]['nextPost'] = Global["posts"][i-1]
 
 
 def preBuildPage(site, page, context, data):
@@ -87,10 +93,10 @@ def _convertDate(date_string, path):
     # Convert a string to a date object
     try:
         return datetime.datetime.strptime(date_string,
-            Global["config"]["date_format"])
+                                          Global["config"]["date_format"])
     except Exception, e:
-        logging.warning("Date format not correct for page %s, should be %s\n%s" \
-            % (path, Global["config"]["date_format"], e))
+        logging.warning("Date format not correct for page %s, \
+            should be %s\n%s" % (path, Global["config"]["date_format"], e))
 
 
 def _get_node(template, context=Context(), name='subject'):

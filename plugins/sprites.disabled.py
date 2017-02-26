@@ -22,7 +22,8 @@ sudo pip install glue
 try:
     import glue
 except Exception as e:
-    sys.exit('Could not use glue: %s\nMaybe install: sudo easy_install glue' % e)
+    sys.exit('Could not use glue: %s\nMaybe install: sudo \
+    easy_install glue' % e)
 
 
 IMG_PATH = 'static/img/sprites'
@@ -30,9 +31,11 @@ CSS_PATH = 'static/css/sprites'
 
 KEY = '_PREV_CHECKSUM'
 
+
 def checksum(path):
     command = 'md5 `find %s -type f`' % pipes.quote(IMG_PATH)
     return subprocess.check_output(command, shell=True)
+
 
 def preBuild(site):
     if not os.path.isdir(IMG_PATH):
@@ -49,6 +52,7 @@ def preBuild(site):
         shutil.rmtree(CSS_PATH)
 
     os.mkdir(CSS_PATH)
-    os.system('glue --cachebuster --crop --optipng "%s" "%s" --project' % (IMG_PATH, CSS_PATH))
+    os.system('glue --cachebuster --crop --optipng "%s" "%s" \
+               --project' % (IMG_PATH, CSS_PATH))
 
     setattr(site, KEY, currChecksum)
