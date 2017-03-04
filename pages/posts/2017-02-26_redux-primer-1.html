@@ -59,7 +59,7 @@ const HAS_APPLES = 'HAS_APPLES';
 
 **Action Creator**: Functions that return an object that describes an action. I often refer to these as actions. Think of them as giving context to an action that by itself has little meaning.
 ```javascript
-const hasApples = ( number_of_apples ) => {
+const hasApples = ( number_of_apples: number ) => {
   return {
     type: HAS_APPLES,
     number_of_apples
@@ -69,7 +69,7 @@ const hasApples = ( number_of_apples ) => {
 
 **Reducer**: Pure functions that accept two arugments: the previous state and the return of an action creator. Reducers return the next or new state. They **DO NOT** modify the state that they were given.
 ```javascript
-const hasApplesReducer = ( state = PREVIOUS_STATE, action ) => {
+const hasApplesReducer = ( state = PREVIOUS_STATE, action: Object ) => {
   return {
     ...state,
     apples: action.number_of_apples
@@ -233,20 +233,24 @@ Our store is ready to party. Though, say we want to log actions as they move thr
 
 The basic structure of a middleware:
 ```javascript
-const middleware = store => next => action => {
-  return next( action );
+const middleware = (store: Object) =>
+  (next: function) =>
+    (action: Object) => {
+      return next( action );
 };
 ```
 
 You can evaluate the store before and after calling next. Next applies the action to the store but it does not modify the state.
 
 ```javascript
-const middleware = store => next => action => {
-  console.log( 'Previous State', store.getState() );
-  let result = next( action );
-  console.log( 'Next State', store.getState());
+const middleware = (store: Object) =>
+  (next: function) =>
+    (action: Object) => {
+      console.log( 'Previous State', store.getState() );
+      let result = next( action );
+      console.log( 'Next State', store.getState());
 
-  return result.
+      return result.
 };
 ```
 
@@ -292,7 +296,7 @@ const INITIAL_STATE = {
 A reducer could easily look like the following. I've used `Object.assign` here to maintain simplicity and avoid relying on any immutability helpers.
 
 ```javascript
-const receiveUser = ( state = INITIAL_STATE, action ) => {
+const receiveUser = ( state = INITIAL_STATE, action: Object ) => {
   return Object.assign( {}, state, {
     user: action.user
   } );
@@ -302,11 +306,11 @@ const receiveUser = ( state = INITIAL_STATE, action ) => {
 We could map this reducer to an `AUTH_SUCCESS` action that contains a user object.
 
 ```javascript
-export default rootReducer = ( state = INITIAL_STATE, action ) => {
+export default rootReducer = ( state = INITIAL_STATE, action: Object ) => {
   switch( action.type ) {
       case AUTH_SUCCESS:
         return receiveUser( state, action );
-      case default:
+      default:
         return state;
   }
 };
@@ -315,7 +319,7 @@ export default rootReducer = ( state = INITIAL_STATE, action ) => {
 I've shown here how a reducer could be crafted to update an object with the intended return of an action. However, what if we had an `UPDATE_FIRSTNAME` action that only updated the user object's first name? Assuming that the state's user property is no longer null we can clevery craft reducers with the es6 object spread operator.
 
 ```javascript
-const updateUsername = ( state = INITIAL_STATE, action ) => {
+const updateUsername = ( state = INITIAL_STATE, action: Object ) => {
   return Object.assign( {}, state, {
     user: {
       ...state.user,
