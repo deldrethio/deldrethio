@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section id="wrapper">
+    <article>
+        <h1>The Sacred Doorway</h1>
+        <p>
+            <a href='https://github.com/deldreth/py-sacred-doorway'>Github</a>
+        </p>
+        <p>
+            The Sacred Doorway is an art grant funded project from 2014 produced on behalf
+            of Transformus, LLC. Transformus is an East Coast regional Burning Man sanctioned
+            event that takes place in the mountains of Western North Carolina. Details of
+            the design and layout of the piece can be found on Github.
+        </p>
+    </article>
+
+	{% block footer %}
+		<footer id="footer">
+			<p class="small">deldreth.com</p>
+		</footer>
+	{% endblock footer %}
+</section>
+{% endblock %}

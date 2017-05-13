@@ -61,10 +61,13 @@ def preBuild(site):
                 name=Global["config"]["post_body_block"])
 
             Global["posts"].append(context_post)
+            # print context_post.get('date')
 
+        Global["posts"] = sorted(Global["posts"], key=lambda x: x.get("date"))
+        Global["posts"].reverse()
     # Sort the posts by date and add the next and previous page indexes
-    Global["posts"] = sorted(Global["posts"], key=lambda x: x.get("date"))
-    Global["posts"].reverse()
+    # Global["posts"] = sorted(Global["posts"], key=lambda x: x.get("date"))
+    # Global["posts"].reverse()
 
     indexes = xrange(0, len(Global["posts"]))
 
